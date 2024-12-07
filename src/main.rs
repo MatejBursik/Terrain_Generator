@@ -33,7 +33,7 @@ fn main() {
     }
 
     let mut raycaster = RayCaster::new();
-    let mut keys = [false, false, false, false]; // A, D, W, S
+    let mut keys = [false; 4]; // A, D, W, S
 
     while !window.should_close() {
         glfw.poll_events();

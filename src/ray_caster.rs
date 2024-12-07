@@ -1,8 +1,8 @@
 use gl::types::*;
 use std::ptr;
 
-const SCREEN_WIDTH: usize = 120;
-const SCREEN_HEIGHT: usize = 40;
+const SCREEN_WIDTH: usize = 200;
+//const SCREEN_HEIGHT: usize = 60;
 const MAP_WIDTH: usize = 16;
 const MAP_HEIGHT: usize = 16;
 
@@ -78,7 +78,7 @@ impl RayCaster {
         }
     }
 
-    pub fn is_valid_move(&self, x: f32, y: f32) -> bool {
+    fn is_valid_move(&self, x: f32, y: f32) -> bool {
         let map_x = x as usize;
         let map_y = y as usize;
         if map_x >= MAP_WIDTH || map_y >= MAP_HEIGHT {
@@ -87,7 +87,7 @@ impl RayCaster {
         self.map[map_y * MAP_WIDTH + map_x] != '#'
     }
 
-    pub fn ray_cast(&self) -> Vec<(f32, bool, bool)> {
+    pub fn ray_cast(&self) -> Vec<(f32, bool)> {
         let mut ray_results = Vec::new();
 
         for x in 0..SCREEN_WIDTH {
@@ -99,7 +99,6 @@ impl RayCaster {
 
             let mut distance_to_wall = 0.0;
             let mut hit_wall = false;
-            let mut boundary = false;
 
             while !hit_wall && distance_to_wall < self.depth {
                 distance_to_wall += 0.1;
@@ -112,40 +111,28 @@ impl RayCaster {
                     distance_to_wall = self.depth;
                 } else if self.map[test_y * MAP_WIDTH + test_x] == '#' {
                     hit_wall = true;
-                    boundary = true; // Simplified boundary detection
                 }
             }
 
-            ray_results.push((distance_to_wall, hit_wall, boundary));
+            ray_results.push((distance_to_wall, hit_wall));
         }
 
         ray_results
     }
 
-    pub fn render(&self, ray_results: &Vec<(f32, bool, bool)>, window: &mut glfw::Window) {
+    pub fn render(&self, ray_results: &Vec<(f32, bool)>, window: &mut glfw::Window) {
         // Generate and bind a Vertex Array Object (VAO)
         let mut vao: GLuint = 0;
         unsafe {
             gl::Clear(gl::COLOR_BUFFER_BIT);
             gl::GenVertexArrays(1, &mut vao);
             gl::BindVertexArray(vao);
+            gl::ClearColor(0.25, 0.25, 0.25, 1.0); // Gray background color
         
-        
-            for (x, (distance, hit_wall, boundary)) in ray_results.iter().enumerate() {
+            for (x, (distance, hit_wall)) in ray_results.iter().enumerate() {
                 // Normalize distance for rendering
                 let normalized_height = 1.0 - (*distance / self.depth);
                 let normalized_x = (x as f32 / SCREEN_WIDTH as f32) * 2.0 - 1.0;
-                
-                // Choose color based on wall properties
-                if *hit_wall {
-                    if *boundary {
-                        gl::ClearColor(1.0, 0.0, 0.0, 1.0); // Red for boundaries
-                    } else {
-                        gl::ClearColor(0.5, 0.5, 0.5, 1.0); // Gray for walls
-                    }
-                } else {
-                    gl::ClearColor(0.0, 0.0, 1.0, 1.0); // Blue for open space
-                }
                 
                 // Define vertices for the vertical line
                 let vertices: [f32; 4] = [
@@ -171,7 +158,6 @@ impl RayCaster {
                 // Unbind the VBO and delete it
                 gl::BindBuffer(gl::ARRAY_BUFFER, 0);
                 gl::DeleteBuffers(1, &vbo);
-                
             }
         }
 
