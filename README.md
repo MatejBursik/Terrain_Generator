@@ -3,4 +3,5 @@ Trying to make a basic 3D Game using ray casting with a similar approach to [Wol
 
 ## Issues
 - coloring walls has some issues, overall approach to displaying perspective needs to be rethinked
+- need to provide a fragment shader for the lines representing the walls, not all drivers provide a default
 - slow movements and rotation, probably caused by incorrect use of elapsed_time, temporary solution (speed: 5000.0)
