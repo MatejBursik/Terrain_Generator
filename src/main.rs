@@ -33,7 +33,8 @@ fn main() {
     }
 
     let mut raycaster = RayCaster::new();
-    let mut keys = [false; 4]; // A, D, W, S
+    let mut keys = [false; 4]; // W, A, S, D
+    let mut modes = false; // true = First person view, false = Landscape view
 
     while !window.should_close() {
         glfw.poll_events();
@@ -41,6 +42,7 @@ fn main() {
         // Process events
         for (_, event) in glfw::flush_messages(&events) {
             match event {
+                glfw::WindowEvent::Key(Key::F1, _, Action::Press, _) => modes = !modes,
                 glfw::WindowEvent::Key(Key::A, _, Action::Press, _) => keys[0] = true,
                 glfw::WindowEvent::Key(Key::A, _, Action::Release, _) => keys[0] = false,
                 glfw::WindowEvent::Key(Key::D, _, Action::Press, _) => keys[1] = true,
@@ -53,17 +55,21 @@ fn main() {
             }
         }
 
-        // Update game state
-        let now = Instant::now();
-        let elapsed_time = now.elapsed().as_secs_f32();
+        // true = First person view
+        // false = Landscape view
+        if modes {
+            // First person view
+            let now = Instant::now();
+            let elapsed_time = now.elapsed().as_secs_f32();
 
-        raycaster.handle_input(&keys, elapsed_time);
-        let ray_results = raycaster.ray_cast();
+            raycaster.handle_input(&keys, elapsed_time);
+            let ray_results = raycaster.ray_cast();
+            raycaster.render(&ray_results, &mut window);
 
-        // Render raycasting results
-        raycaster.render(&ray_results, &mut window);
-
-        // Swap buffers to display rendered frame
-        window.swap_buffers();
+            // Swap buffers to display rendered frame
+            window.swap_buffers();
+        } else {
+            // Landscape view
+        }
     }
 }
