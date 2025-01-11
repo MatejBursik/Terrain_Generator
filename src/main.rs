@@ -4,8 +4,10 @@ use std::time::Instant;
 use std::ffi::c_void;
 
 mod ray_caster;
+mod perlin_noise;
 
 use ray_caster::RayCaster;
+use perlin_noise::PerlinMap;
 
 fn main() {
     let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
@@ -32,6 +34,14 @@ fn main() {
         gl::ClearColor(0.0, 0.0, 0.0, 1.0);
     }
 
+    // Setup Perlin noise map
+    let mut map = PerlinMap::new();
+    map.generate_vec_map(5, 5);
+    map.debug();
+    println!("{}", map.noise(1.0, 1.0));
+    map.rotate_vec_map(1);
+    map.debug();
+    
     let mut raycaster = RayCaster::new();
     let mut keys = [false; 4]; // W, A, S, D
     let mut modes = false; // true = First person view, false = Landscape view
