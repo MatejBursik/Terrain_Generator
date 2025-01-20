@@ -36,11 +36,9 @@ fn main() {
 
     // Setup Perlin noise map
     let mut map = PerlinMap::new();
+    println!("{:?}", map);
+    println!("noise: {}", map.noise(0.0, 0.0));
     map.generate_vec_map(5, 5);
-    map.debug();
-    println!("{}", map.noise(1.0, 1.0));
-    map.rotate_vec_map(1);
-    map.debug();
     
     let mut raycaster = RayCaster::new();
     let mut keys = [false; 4]; // W, A, S, D
