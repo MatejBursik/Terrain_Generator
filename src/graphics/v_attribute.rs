@@ -7,8 +7,9 @@ use gl::types::*;
 let position_attribute = VertexAttribute::new(0, 3, gl::FLOAT, gl::FALSE, 3 * mem::size_of::<GLfloat>() as GLsizei, ptr::null());
 position_attribute.enable();
 */
+
 pub struct VertexAttribute {
-    index: GLuint,
+    index: GLuint
 }
 
 impl VertexAttribute {
@@ -18,7 +19,7 @@ impl VertexAttribute {
         r_type: GLenum,
         normalized: GLboolean,
         stride: GLsizei,
-        pointer: *const c_void,
+        pointer: *const c_void
     ) -> VertexAttribute {
         unsafe {
             gl::VertexAttribPointer(index, size, r_type, normalized, stride, pointer);

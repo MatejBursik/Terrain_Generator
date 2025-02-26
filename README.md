@@ -18,4 +18,3 @@ Custom perlin noise generator based on the description from this video ( [How Do
 ## Inspiration:
 - [The Coding Train](https://www.youtube.com/watch?v=IKB1hWWedMk)
 - [Zarch](https://en.wikipedia.org/wiki/Zarch)
-- [Mortal Sin](https://store.steampowered.com/app/1494810/Mortal_Sin/)

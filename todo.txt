@@ -1,7 +1,4 @@
 Refactor
-- shader_program.rs
-- v_attribute.rs
-- window.rs
 - README.md
 
 Test

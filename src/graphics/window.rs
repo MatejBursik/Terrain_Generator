@@ -22,7 +22,7 @@ pub struct Window {
 }
 
 impl Window {
-    /// Create new window with settings
+    // Create new window with settings
     pub fn new(width: u32, height: u32, title: &str) -> Window {
         let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
 
@@ -36,7 +36,7 @@ impl Window {
         Window {glfw, window_handle: window, events}
     }
 
-    /// Load gl functions.
+    // Load gl functions.
     pub fn init_gl(&mut self) {
         self.window_handle.make_current();
         gl::load_with(|s| self.window_handle.get_proc_address(s) as *const _);
