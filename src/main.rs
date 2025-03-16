@@ -1,4 +1,4 @@
-use std::{f32::consts::PI, ffi::CString, ptr};
+use std::{f32::consts::PI, ptr};
 use gl::types::*;
 use cgmath::{Matrix4, Rad, Vector3};
 
@@ -21,6 +21,10 @@ fn main() {
     let mut triangle_count = 0;
     let mut vertices:Vec<f32> = Vec::new();
     let mut indices:Vec<i32> = Vec::new();
+
+    // TODO: make this into a function
+    //      IN map_h, map_w, perlin_map
+    //      OUT vertices, indices, triangle_count
 
     // Populate map
     for i in 0 .. map_h * map_w{
@@ -79,14 +83,12 @@ fn main() {
     let position_attribute = v_attribute::VertexAttribute::new(0, 3, gl::FLOAT, gl::FALSE, 3 * std::mem::size_of::<GLfloat>() as GLsizei, ptr::null());
     position_attribute.enable();
 
-    // Create shader program
+    // Load shaders
     let mut shader = shader_reader::ShaderReader::new("resources/vertex_shader.glsl", "resources/fragment_shader.glsl");
-    
-    // Create a transformation matrix
-    let transform = Matrix4::from_translation(Vector3::new(0.0, 0.0, 0.0)) * Matrix4::from_angle_x(Rad(PI/4.0));
-
-    // Set the uniform in the shader
     shader.bind();
+
+    // Create a transformation matrix and apply it to the shader
+    let transform = Matrix4::from_translation(Vector3::new(0.0, 0.0, 0.0)) * Matrix4::from_angle_x(Rad(PI/3.0)) * Matrix4::from_scale(0.75);
     shader.create_uniform("transform");
     shader.set_matrix4fv_uniform("transform", &transform);
 

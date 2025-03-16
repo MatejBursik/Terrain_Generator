@@ -1,15 +1,22 @@
 #version 330 core
 
-in vec2 uv;
-out vec4 FragColor;
+in vec3 barycentricCoord;
+in vec3 faceColor;
+out vec4 fragColor;
 
 void main() {
-    // Thickness of the black outline in UV units
-    float edgeThickness = 0.26;
+    // Calculate distance to the nearest edge using barycentric coordinates
+    float minBary = min(min(barycentricCoord.x, barycentricCoord.y), barycentricCoord.z);
     
-    if (uv.x < edgeThickness || uv.x > 1.0 - edgeThickness || uv.y < edgeThickness || uv.y > 1.0 - edgeThickness) {
-        FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    float edgeThreshold = 0.02;
+    vec3 edgeColor = vec3(0.0, 0.0, 0.0);
+    
+    // Mix face color and edge color based on distance from the edge
+    if (minBary < edgeThreshold) {
+        // Apply edge color
+        fragColor = vec4(edgeColor, 1.0);
     } else {
-        FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+        // Apply face color
+        fragColor = vec4(faceColor, 1.0);
     }
 }
