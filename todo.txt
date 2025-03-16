@@ -3,5 +3,5 @@ TODO:
     - press E to rotate anti-clockwise
     - press Q to rotate clockwise
 
-Rework
+Rework:
 - README.md

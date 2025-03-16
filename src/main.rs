@@ -25,7 +25,7 @@ fn main() {
     // Initialize map
     let map_h = 10;
     let map_w = 10;
-    let scale = 0.1;
+    let scale = 0.3;
 
     let r = generate_mesh(scale, map_h, map_w, 0.0, &perlin_map);
     let triangle_count: i32 = r.2;
@@ -33,7 +33,7 @@ fn main() {
     let indices: Vec<i32> = r.1;
 
     // Initialize application
-    let mut window = window::Window::new(720, 720, "Terrain Generator");
+    let mut window = window::Window::new(1200, 720, "Terrain Generator");
     window.init_gl();
 
     let vao = vao::ArrayObject::new();
@@ -59,6 +59,11 @@ fn main() {
     shader.create_uniform("transform");
     shader.set_matrix4fv_uniform("transform", &transform);
 
+    // Setup Z-buffer (depth) testing
+    unsafe {
+        gl::Enable(gl::DEPTH_TEST);
+    }
+
     while !window.close() {
         let frame_start = Instant::now();
 
@@ -66,7 +71,7 @@ fn main() {
 
         unsafe {
             gl::ClearColor(0.25, 0.25, 0.25, 1.0); // Gray background color
-            gl::Clear(gl::COLOR_BUFFER_BIT);
+            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
             shader.bind();
             shader.set_matrix4fv_uniform("transform", &transform);
