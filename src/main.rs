@@ -4,66 +4,28 @@ use cgmath::{Matrix4, Rad, Vector3};
 
 mod graphics;
 mod perlin_noise;
+mod generate_mesh;
 
 use graphics::*;
 use perlin_noise::PerlinMap;
+use generate_mesh::generate_mesh;
 
 fn main() {
     // Setup Perlin noise map
-    let mut p_map = PerlinMap::new();
-    println!("{:?}", p_map);
-    println!("noise: {}", p_map.noise(0.3, 0.4));
-    p_map.generate_vec_map(5, 5);
+    let mut perlin_map = PerlinMap::new();
+    println!("{:?}", perlin_map);
+    println!("noise: {}", perlin_map.noise(0.3, 0.4));
+    perlin_map.generate_vec_map(10, 10);
 
     // Initialize map
     let map_h = 10;
     let map_w = 10;
-    let mut triangle_count = 0;
-    let mut vertices:Vec<f32> = Vec::new();
-    let mut indices:Vec<i32> = Vec::new();
+    let scale = 0.1;
 
-    // TODO: make this into a function
-    //      IN map_h, map_w, perlin_map
-    //      OUT vertices, indices, triangle_count
-
-    // Populate map
-    for i in 0 .. map_h * map_w{
-        let x = (i % map_w) as f32; // Column
-        let y = (i / map_w) as f32; // Row
-        let z = p_map.noise(x / 10.0, y / 10.0);
-
-        // Normalize to UV coordinates (0.0 to 1.0)
-        let u = (x as f32 / (map_w - 1) as f32) * 2.0 - 1.0; // X
-        let v = (y as f32 / (map_h - 1) as f32) * 2.0 - 1.0; // Y
-
-        vertices.push(u);
-        vertices.push(v);
-        vertices.push(z);
-
-        // Generate indices (except for the last row and column)
-        if x < (map_w - 1) as f32 && y < (map_h - 1) as f32 {
-            let top_left = i as i32;
-            let top_right = (i + 1) as i32;
-            let bottom_left = (i + map_w) as i32;
-            let bottom_right = (i + map_w + 1) as i32;
-
-            // First triangle (Top Left, Bottom Left, Bottom Right)
-            indices.push(top_left);
-            indices.push(bottom_left);
-            indices.push(bottom_right);
-            triangle_count += 1;
-
-            // Second triangle (Top Left, Bottom Right, Top Right)
-            indices.push(top_left);
-            indices.push(bottom_right);
-            indices.push(top_right);
-            triangle_count += 1;
-        }
-    }
-
-    println!("{:?}", vertices);
-    println!("{:?}", indices);
-    println!("{triangle_count}");
+    let r = generate_mesh(scale, map_h, map_w, 0.0, &perlin_map);
+    let triangle_count: i32 = r.2;
+    let vertices: Vec<f32> = r.0;
+    let indices: Vec<i32> = r.1;
 
     // Initialize application
     let mut window = window::Window::new(720, 720, "Terrain Generator");
@@ -96,6 +58,7 @@ fn main() {
         unsafe {
             gl::ClearColor(0.25, 0.25, 0.25, 1.0); // Gray background color
             gl::Clear(gl::COLOR_BUFFER_BIT);
+
             shader.bind();
             gl::DrawElements(gl::TRIANGLES, triangle_count*3, gl::UNSIGNED_INT, ptr::null());
             shader.unbind();

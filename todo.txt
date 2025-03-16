@@ -1,10 +1,7 @@
-Refactor
+TODO
+- add rotation to the terrain (Matrix4::from_angle_z(rad_angle))
+    - press E to rotate anti-clockwise
+    - press Q to rotate clockwise
+
+Rework
 - README.md
-
-Test
-- remake the ray_caster into the new system with shaders and rectangles instead of lines of walls
-
-Issues
-- coloring walls has some issues, overall approach to displaying perspective needs to be rethinked
-- need to provide a fragment shader for the lines representing the walls, not all drivers provide a default
-- slow movements and rotation, probably caused by incorrect use of elapsed_time, temporary solution (speed: 5000.0)
