@@ -1,6 +1,7 @@
 use std::{f32::consts::PI, ptr};
 use gl::types::*;
 use cgmath::{Matrix4, Rad, Vector3};
+use std::time::{Duration, Instant};
 
 mod graphics;
 mod perlin_noise;
@@ -11,6 +12,10 @@ use perlin_noise::PerlinMap;
 use generate_mesh::generate_mesh;
 
 fn main() {
+    // FPS limiting variables
+    let target_fps = 60;
+    let frame_duration = Duration::from_secs_f64(1.0 / target_fps as f64);
+
     // Setup Perlin noise map
     let mut perlin_map = PerlinMap::new();
     println!("{:?}", perlin_map);
@@ -50,19 +55,30 @@ fn main() {
     shader.bind();
 
     // Create a transformation matrix and apply it to the shader
-    let transform = Matrix4::from_translation(Vector3::new(0.0, 0.0, 0.0)) * Matrix4::from_angle_x(Rad(PI/3.0)) * Matrix4::from_scale(0.75);
+    let mut transform = Matrix4::from_translation(Vector3::new(0.0, 0.0, 0.0)) * Matrix4::from_angle_x(Rad(PI/3.0)) * Matrix4::from_scale(0.75);
     shader.create_uniform("transform");
     shader.set_matrix4fv_uniform("transform", &transform);
 
     while !window.close() {
+        let frame_start = Instant::now();
+
+        transform = transform * Matrix4::from_angle_z(Rad(PI/1000.0));
+
         unsafe {
             gl::ClearColor(0.25, 0.25, 0.25, 1.0); // Gray background color
             gl::Clear(gl::COLOR_BUFFER_BIT);
 
             shader.bind();
+            shader.set_matrix4fv_uniform("transform", &transform);
             gl::DrawElements(gl::TRIANGLES, triangle_count*3, gl::UNSIGNED_INT, ptr::null());
             shader.unbind();
         }
         window.update();
+
+        // Calculate how long to sleep to maintain target FPS
+        let elapsed = frame_start.elapsed();
+        if elapsed < frame_duration {
+            std::thread::sleep(frame_duration - elapsed);
+        }
     }
 }
