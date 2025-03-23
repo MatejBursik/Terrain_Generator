@@ -1,7 +1,7 @@
 use std::{f32::consts::PI, ptr};
 use gl::types::*;
 use cgmath::{Matrix4, Rad, Vector3};
-use std::time::{Duration, Instant};
+use glfw::Key;
 
 mod graphics;
 mod perlin_noise;
@@ -12,10 +12,6 @@ use perlin_noise::PerlinMap;
 use generate_mesh::generate_mesh;
 
 fn main() {
-    // FPS limiting variables
-    let target_fps = 60;
-    let frame_duration = Duration::from_secs_f64(1.0 / target_fps as f64);
-
     // Setup Perlin noise map
     let mut perlin_map = PerlinMap::new();
     println!("{:?}", perlin_map);
@@ -35,6 +31,7 @@ fn main() {
     // Initialize application
     let mut window = window::Window::new(1200, 720, "Terrain Generator");
     window.init_gl();
+    window.set_fps(1);
 
     let vao = vao::ArrayObject::new();
     vao.bind();
@@ -65,9 +62,14 @@ fn main() {
     }
 
     while !window.close() {
-        let frame_start = Instant::now();
-
-        transform = transform * Matrix4::from_angle_z(Rad(PI/1000.0));
+        if window.is_key_pressed(Key::Q) {
+            transform = transform * Matrix4::from_angle_z(-Rad(PI/500.0));
+            println!("Q");
+        }
+        if window.is_key_pressed(Key::E) {
+            transform = transform * Matrix4::from_angle_z(Rad(PI/500.0));
+            println!("E");
+        }
 
         unsafe {
             gl::ClearColor(0.25, 0.25, 0.25, 1.0); // Gray background color
@@ -79,11 +81,5 @@ fn main() {
             shader.unbind();
         }
         window.update();
-
-        // Calculate how long to sleep to maintain target FPS
-        let elapsed = frame_start.elapsed();
-        if elapsed < frame_duration {
-            std::thread::sleep(frame_duration - elapsed);
-        }
     }
 }

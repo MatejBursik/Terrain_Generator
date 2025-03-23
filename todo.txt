@@ -1,7 +1,4 @@
 TODO:
-- add rotation to the terrain (Matrix4::from_angle_z(rad_angle))
-    - press E to rotate anti-clockwise
-    - press Q to rotate clockwise
 
 Rework:
 - README.md
