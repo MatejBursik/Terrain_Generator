@@ -84,24 +84,40 @@ fn main() {
         }
         // WASD
         if window.is_key_pressed(Key::W) {
-            player_y += player_speed;
-            player_moved = true;
-            println!("x = {}, y = {}", player_x, player_y);
+            if perlin_map.is_valid_coord(scale, map_h, map_w, player_x, player_y + player_speed) {
+                player_y += player_speed;
+                player_moved = true;
+                println!("x = {}, y = {}", player_x, player_y);
+            } else {
+                println!("Edge")
+            }
         }
         if window.is_key_pressed(Key::S) {
-            player_y -= player_speed;
-            player_moved = true;
-            println!("x = {}, y = {}", player_x, player_y);
+            if perlin_map.is_valid_coord(scale, map_h, map_w, player_x, player_y - player_speed) {
+                player_y -= player_speed;
+                player_moved = true;
+                println!("x = {}, y = {}", player_x, player_y);
+            } else {
+                println!("Edge")
+            }
         }
         if window.is_key_pressed(Key::A) {
-            player_x -= player_speed;
-            player_moved = true;
-            println!("x = {}, y = {}", player_x, player_y);
+            if perlin_map.is_valid_coord(scale, map_h, map_w, player_x - player_speed, player_y) {
+                player_x -= player_speed;
+                player_moved = true;
+                println!("x = {}, y = {}", player_x, player_y);
+            } else {
+                println!("Edge")
+            }
         }
         if window.is_key_pressed(Key::D) {
-            player_x += player_speed;
-            player_moved = true;
-            println!("x = {}, y = {}", player_x, player_y);
+            if perlin_map.is_valid_coord(scale, map_h, map_w, player_x + player_speed, player_y) {
+                player_x += player_speed;
+                player_moved = true;
+                println!("x = {}, y = {}", player_x, player_y);
+            } else {
+                println!("Edge")
+            }
         }
 
         // Regenerate mesh if player moved

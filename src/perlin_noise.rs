@@ -108,4 +108,15 @@ impl PerlinMap {
         // Interpolate along y for final value
         self.lerp(nx0, nx1, sy)
     }
+
+    pub fn is_valid_coord(&self, scale: f32, map_h: i32, map_w: i32, x: f32, y: f32) -> bool {
+        if x >= self.width as f32 - (map_w as f32 * scale) ||
+            y >= self.height as f32 - (map_h as f32 * scale) ||
+            x < 0.0 ||
+            y < 0.0 {
+            return false;
+        }
+        
+        true
+    }
 }
