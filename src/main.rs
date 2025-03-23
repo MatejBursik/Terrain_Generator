@@ -23,10 +23,17 @@ fn main() {
     let map_w = 10;
     let scale = 0.3;
 
-    let r = generate_mesh(scale, map_h, map_w, 0.0, &perlin_map);
-    let triangle_count: i32 = r.2;
-    let vertices: Vec<f32> = r.0;
-    let indices: Vec<i32> = r.1;
+    let mut player_direction = 0.0;
+    let mut player_x = 0.0;
+    let mut player_y = 0.0;
+    let player_speed: f32 = 0.01;
+    let mut player_moved: bool;
+    let rotate_value = PI/500.0;
+
+    let mut r = generate_mesh(scale, map_h, map_w, player_x, player_y, &perlin_map);
+    let mut triangle_count: i32 = r.2;
+    let mut vertices: Vec<f32> = r.0;
+    let mut indices: Vec<i32> = r.1;
 
     // Initialize application
     let mut window = window::Window::new(1200, 720, "Terrain Generator");
@@ -62,13 +69,54 @@ fn main() {
     }
 
     while !window.close() {
+        player_moved = false;
+
+        // QE
         if window.is_key_pressed(Key::Q) {
-            transform = transform * Matrix4::from_angle_z(-Rad(PI/500.0));
-            println!("Q");
+            transform = transform * Matrix4::from_angle_z(-Rad(rotate_value));
+            player_direction -= rotate_value;
+            println!("{}", player_direction);
         }
         if window.is_key_pressed(Key::E) {
-            transform = transform * Matrix4::from_angle_z(Rad(PI/500.0));
-            println!("E");
+            transform = transform * Matrix4::from_angle_z(Rad(rotate_value));
+            player_direction += rotate_value;
+            println!("{}", player_direction);
+        }
+        // WASD
+        if window.is_key_pressed(Key::W) {
+            player_y += player_speed;
+            player_moved = true;
+            println!("x = {}, y = {}", player_x, player_y);
+        }
+        if window.is_key_pressed(Key::S) {
+            player_y -= player_speed;
+            player_moved = true;
+            println!("x = {}, y = {}", player_x, player_y);
+        }
+        if window.is_key_pressed(Key::A) {
+            player_x -= player_speed;
+            player_moved = true;
+            println!("x = {}, y = {}", player_x, player_y);
+        }
+        if window.is_key_pressed(Key::D) {
+            player_x += player_speed;
+            player_moved = true;
+            println!("x = {}, y = {}", player_x, player_y);
+        }
+
+        // Regenerate mesh if player moved
+        if player_moved {
+            r = generate_mesh(scale, map_h, map_w, player_x, player_y, &perlin_map);
+            vertices = r.0;
+            indices = r.1;
+            triangle_count = r.2;
+            
+            // Update VBO and IBO with new data
+            vbo.bind();
+            vbo.store_f32_data(&vertices);
+            
+            ibo.bind();
+            ibo.store_i32_data(&indices);
         }
 
         unsafe {

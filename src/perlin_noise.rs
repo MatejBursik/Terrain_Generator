@@ -94,6 +94,7 @@ impl PerlinMap {
         let nx0 = self.lerp(n00, n10, sx);
         let nx1 = self.lerp(n01, n11, sx);
 
+        /* DEBUG
         println!("0,0: {}", n00);
         println!("1,0: {}", n10);
         println!("0,1: {}", n01);
@@ -102,6 +103,7 @@ impl PerlinMap {
         println!("lerp x0: {}", nx0);
         println!("lerp x1: {}", nx1);
         println!("sy: {}", sy);
+        */
 
         // Interpolate along y for final value
         self.lerp(nx0, nx1, sy)

@@ -1,6 +1,6 @@
 use crate::perlin_noise::PerlinMap;
 
-pub fn generate_mesh(scale: f32, map_h: i32, map_w: i32, position: f32, p_map: &PerlinMap) -> (Vec<f32>, Vec<i32>, i32) {
+pub fn generate_mesh(scale: f32, map_h: i32, map_w: i32, pos_x: f32, pos_y: f32, p_map: &PerlinMap) -> (Vec<f32>, Vec<i32>, i32) {
     let mut vertices: Vec<f32> = Vec::new();
     let mut indices: Vec<i32> = Vec::new();
     let mut triangle_count: i32 = 0;
@@ -9,7 +9,7 @@ pub fn generate_mesh(scale: f32, map_h: i32, map_w: i32, position: f32, p_map: &
     for i in 0 .. map_h * map_w {
         let x = (i % map_w) as f32; // Column
         let y = (i / map_w) as f32; // Row
-        let z = p_map.noise((x * scale) + position, (y * scale) + position);
+        let z = p_map.noise((x * scale) + pos_x, (y * scale) + pos_y);
         
         // Normalize to UV coordinates (0.0 to 1.0)
         let u = (x as f32 / (map_w - 1) as f32) * 2.0 - 1.0; // X
