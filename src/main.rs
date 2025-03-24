@@ -5,11 +5,13 @@ use glfw::Key;
 
 mod graphics;
 mod perlin_noise;
-mod generate_mesh;
+mod functions;
+mod structs;
 
 use graphics::*;
 use perlin_noise::PerlinMap;
-use generate_mesh::generate_mesh;
+use functions::generate_mesh;
+use structs::Player;
 
 fn main() {
     // Setup Perlin noise map
@@ -18,19 +20,17 @@ fn main() {
     println!("noise: {}", perlin_map.noise(0.3, 0.4));
     perlin_map.generate_vec_map(10, 10);
 
+    //Initialize player
+    let mut  player = Player::new();
+    player.speed = 0.01;
+    let rotate_value = PI/500.0;
+
     // Initialize map
     let map_h = 10;
     let map_w = 10;
     let scale = 0.3;
 
-    let mut player_direction = 0.0;
-    let mut player_x = 0.0;
-    let mut player_y = 0.0;
-    let player_speed: f32 = 0.01;
-    let mut player_moved: bool;
-    let rotate_value = PI/500.0;
-
-    let mut r = generate_mesh(scale, map_h, map_w, player_x, player_y, &perlin_map);
+    let mut r = generate_mesh(scale, map_h, map_w, player.x, player.y, &perlin_map);
     let mut triangle_count: i32 = r.2;
     let mut vertices: Vec<f32> = r.0;
     let mut indices: Vec<i32> = r.1;
@@ -69,60 +69,60 @@ fn main() {
     }
 
     while !window.close() {
-        player_moved = false;
+        player.has_moved = false;
 
         // QE
         if window.is_key_pressed(Key::Q) {
             transform = transform * Matrix4::from_angle_z(-Rad(rotate_value));
-            player_direction -= rotate_value;
-            println!("{}", player_direction);
+            player.direction -= rotate_value;
+            println!("{}", player.direction);
         }
         if window.is_key_pressed(Key::E) {
             transform = transform * Matrix4::from_angle_z(Rad(rotate_value));
-            player_direction += rotate_value;
-            println!("{}", player_direction);
+            player.direction += rotate_value;
+            println!("{}", player.direction);
         }
         // WASD
         if window.is_key_pressed(Key::W) {
-            if perlin_map.is_valid_coord(scale, map_h, map_w, player_x, player_y + player_speed) {
-                player_y += player_speed;
-                player_moved = true;
-                println!("x = {}, y = {}", player_x, player_y);
+            if perlin_map.is_valid_coord(scale, map_h, map_w, player.x, player.y + player.speed) {
+                player.y += player.speed;
+                player.has_moved = true;
+                println!("x = {}, y = {}", player.x, player.y);
             } else {
                 println!("Edge")
             }
         }
         if window.is_key_pressed(Key::S) {
-            if perlin_map.is_valid_coord(scale, map_h, map_w, player_x, player_y - player_speed) {
-                player_y -= player_speed;
-                player_moved = true;
-                println!("x = {}, y = {}", player_x, player_y);
+            if perlin_map.is_valid_coord(scale, map_h, map_w, player.x, player.y - player.speed) {
+                player.y -= player.speed;
+                player.has_moved = true;
+                println!("x = {}, y = {}", player.x, player.y);
             } else {
                 println!("Edge")
             }
         }
         if window.is_key_pressed(Key::A) {
-            if perlin_map.is_valid_coord(scale, map_h, map_w, player_x - player_speed, player_y) {
-                player_x -= player_speed;
-                player_moved = true;
-                println!("x = {}, y = {}", player_x, player_y);
+            if perlin_map.is_valid_coord(scale, map_h, map_w, player.x - player.speed, player.y) {
+                player.x -= player.speed;
+                player.has_moved = true;
+                println!("x = {}, y = {}", player.x, player.y);
             } else {
                 println!("Edge")
             }
         }
         if window.is_key_pressed(Key::D) {
-            if perlin_map.is_valid_coord(scale, map_h, map_w, player_x + player_speed, player_y) {
-                player_x += player_speed;
-                player_moved = true;
-                println!("x = {}, y = {}", player_x, player_y);
+            if perlin_map.is_valid_coord(scale, map_h, map_w, player.x + player.speed, player.y) {
+                player.x += player.speed;
+                player.has_moved = true;
+                println!("x = {}, y = {}", player.x, player.y);
             } else {
                 println!("Edge")
             }
         }
 
         // Regenerate mesh if player moved
-        if player_moved {
-            r = generate_mesh(scale, map_h, map_w, player_x, player_y, &perlin_map);
+        if player.has_moved {
+            r = generate_mesh(scale, map_h, map_w, player.x, player.y, &perlin_map);
             vertices = r.0;
             indices = r.1;
             triangle_count = r.2;
