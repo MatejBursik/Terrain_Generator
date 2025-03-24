@@ -1,6 +1,5 @@
 TODO:
     - update movement to be dependent on the rotation of the platform
         - implement player_direction value to determine which way it forward, backward, left, or right
-    - make a player struct
 Rework:
     - README.md
