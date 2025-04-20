@@ -71,7 +71,7 @@ fn main() {
     while !window.close() {
         player.has_moved = false;
 
-        // QE
+        // QE for rotation
         if window.is_key_pressed(Key::Q) {
             transform = transform * Matrix4::from_angle_z(-Rad(rotate_value));
             player.direction -= rotate_value;
@@ -82,41 +82,41 @@ fn main() {
             player.direction += rotate_value;
             println!("{}", player.direction);
         }
-        // WASD
+
+        // Calculate movement direction based on player's direction
+        let mut dx = 0.0;
+        let mut dy = 0.0;
+
+        // WASD movement relative to player direction
         if window.is_key_pressed(Key::W) {
-            if perlin_map.is_valid_coord(scale, map_h, map_w, player.x, player.y + player.speed) {
-                player.y += player.speed;
-                player.has_moved = true;
-                println!("x = {}, y = {}", player.x, player.y);
-            } else {
-                println!("Edge")
-            }
+            dx += player.speed * player.direction.sin();
+            dy += player.speed * player.direction.cos();
         }
         if window.is_key_pressed(Key::S) {
-            if perlin_map.is_valid_coord(scale, map_h, map_w, player.x, player.y - player.speed) {
-                player.y -= player.speed;
-                player.has_moved = true;
-                println!("x = {}, y = {}", player.x, player.y);
-            } else {
-                println!("Edge")
-            }
+            dx -= player.speed * player.direction.sin();
+            dy -= player.speed * player.direction.cos();
         }
         if window.is_key_pressed(Key::A) {
-            if perlin_map.is_valid_coord(scale, map_h, map_w, player.x - player.speed, player.y) {
-                player.x -= player.speed;
-                player.has_moved = true;
-                println!("x = {}, y = {}", player.x, player.y);
-            } else {
-                println!("Edge")
-            }
+            dx -= player.speed * player.direction.cos();
+            dy += player.speed * player.direction.sin();
         }
         if window.is_key_pressed(Key::D) {
-            if perlin_map.is_valid_coord(scale, map_h, map_w, player.x + player.speed, player.y) {
-                player.x += player.speed;
+            dx += player.speed * player.direction.cos();
+            dy -= player.speed * player.direction.sin();
+        }
+        
+        // Apply movement if within bounds
+        if dx != 0.0 || dy != 0.0 {
+            let new_x = player.x + dx;
+            let new_y = player.y + dy;
+            
+            if perlin_map.is_valid_coord(scale, map_h, map_w, new_x, new_y) {
+                player.x = new_x;
+                player.y = new_y;
                 player.has_moved = true;
                 println!("x = {}, y = {}", player.x, player.y);
             } else {
-                println!("Edge")
+                println!("Edge");
             }
         }
 
