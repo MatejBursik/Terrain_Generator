@@ -1,4 +1,5 @@
 TODO:
+    - make concept art
     - figure out how to implement first person and switching between the two states
     - figure out how to load a 3D model
         - draw the 3d model in the center of the plain (spaceship flying in the middle of the plain)

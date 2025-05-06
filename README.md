@@ -10,8 +10,8 @@ There are 2 modes (Landscape view, First person view):
 | Key | Description |
 |---|---|
 | W, A, S, D | Forward, Left, Backward, Right (Movement keys) |
-| Q | Rotate platform clockwise |
-| E | Rotate platform anti-clockwise |
+| Q | Rotate clockwise |
+| E | Rotate anti-clockwise |
 | F1 | Switch between the 2 modes |
 
 ## Perlin noise generator
