@@ -1,0 +1,28 @@
+name: Build Rust Executable
+
+# Triggered on push and pull_request events (to the main branch).
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build the executable
+        run: cargo build --release
+
+      - name: Upload the executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust-exe
+          path: target/release/*.exe
