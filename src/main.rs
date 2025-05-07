@@ -17,11 +17,12 @@ fn main() {
     // Setup Perlin noise map
     let mut perlin_map = PerlinMap::new();
     println!("{:?}", perlin_map);
-    println!("noise: {}", perlin_map.noise(0.3, 0.4));
     perlin_map.generate_vec_map(20, 20);
-
+    
     //Initialize player
-    let mut  player = Player::new();
+    let mut player = Player::new();
+    player.x = 18.0;
+    player.y = 16.0;
     player.speed = 0.01;
     let rotate_value = PI/500.0;
 

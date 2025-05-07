@@ -113,8 +113,8 @@ impl PerlinMap {
         let end_x = x + (plain_w as f32 * scale);
         let end_y = y + (plain_h as f32 * scale);
         
-        if end_x >= self.width as f32 ||
-            end_y >= self.height as f32 ||
+        if end_x > self.width as f32 ||
+            end_y > self.height as f32 ||
             x < 0.0 ||
             y < 0.0 {
             return false;
