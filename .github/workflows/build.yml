@@ -23,7 +23,7 @@ jobs:
       
       - name: Copy resources folder
         run: |
-            mkdir -p "target/release/resources"
+            mkdir -p target/release/resources
             xcopy "resources" "target/release/resources" /e /i
 
       - name: Upload the executable and resources
