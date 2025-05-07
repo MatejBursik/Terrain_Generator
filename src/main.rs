@@ -18,7 +18,7 @@ fn main() {
     let mut perlin_map = PerlinMap::new();
     println!("{:?}", perlin_map);
     println!("noise: {}", perlin_map.noise(0.3, 0.4));
-    perlin_map.generate_vec_map(10, 10);
+    perlin_map.generate_vec_map(20, 20);
 
     //Initialize player
     let mut  player = Player::new();
@@ -26,11 +26,11 @@ fn main() {
     let rotate_value = PI/500.0;
 
     // Initialize map
-    let map_h = 10;
-    let map_w = 10;
-    let scale = 0.3;
+    let plain_h = 10;
+    let plain_w = 10;
+    let scale = 0.2;
 
-    let mut r = generate_mesh(scale, map_h, map_w, player.x, player.y, &perlin_map);
+    let mut r = generate_mesh(scale, plain_h, plain_w, player.x, player.y, &perlin_map);
     let mut triangle_count: i32 = r.2;
     let mut vertices: Vec<f32> = r.0;
     let mut indices: Vec<i32> = r.1;
@@ -110,7 +110,7 @@ fn main() {
             let new_x = player.x + dx;
             let new_y = player.y + dy;
             
-            if perlin_map.is_valid_coord(scale, map_h, map_w, new_x, new_y) {
+            if perlin_map.is_valid_coord(scale, plain_h, plain_w, new_x, new_y) {
                 player.x = new_x;
                 player.y = new_y;
                 player.has_moved = true;
@@ -122,7 +122,7 @@ fn main() {
 
         // Regenerate mesh if player moved
         if player.has_moved {
-            r = generate_mesh(scale, map_h, map_w, player.x, player.y, &perlin_map);
+            r = generate_mesh(scale, plain_h, plain_w, player.x, player.y, &perlin_map);
             vertices = r.0;
             indices = r.1;
             triangle_count = r.2;
