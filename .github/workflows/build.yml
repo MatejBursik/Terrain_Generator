@@ -21,8 +21,13 @@ jobs:
       - name: Build the executable
         run: cargo build --release
 
-      - name: Upload the executable
+      - name: Copy resources folder
+        run: xcopy /E /I resources target/release/resources
+
+      - name: Upload the executable and resources
         uses: actions/upload-artifact@v4
         with:
-          name: rust-exe
-          path: target/release/*.exe
+          name: rust-exe-and-resources
+          path: |
+            target/release/*.exe
+            target/release/resources

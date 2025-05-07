@@ -8,7 +8,6 @@ Rework:
     - README.md
 
 Fix:
-    - workflow: exe is missing resources directory
     - out of bounds: max Y border check is failing but not the max X (issue probably in generate_mesh())
         thread 'main' panicked at src\perlin_noise.rs:40:21:
         index out of bounds: the len is 100 but the index is 100
