@@ -4,7 +4,8 @@ use rand::{Rng, thread_rng};
 pub struct PerlinMap {
     vec_map: Vec<i32>,
     width: i32,
-    height: i32
+    height: i32,
+    seamless: bool
 }
 
 impl PerlinMap {
@@ -12,8 +13,13 @@ impl PerlinMap {
         PerlinMap {
             vec_map: vec![60, 45, 150, 240],
             width: 2,
-            height: 2
+            height: 2,
+            seamless: false
         }
+    }
+
+    pub fn set_seamless(&mut self, seamless: bool) {
+        self.seamless = seamless;
     }
 
     pub fn generate_vec_map(&mut self, width: i32, height: i32) {
@@ -36,7 +42,22 @@ impl PerlinMap {
     }
 
     fn gradient_angle(&self, x: i32, y: i32) -> i32 {
-        let index = y * self.width + x;
+        //let index = y * self.width + x;
+        //self.vec_map[index as usize]
+        let calc_x ;
+        let calc_y;
+
+        if self.seamless {
+            // Wrap coordinates for seamless terrain
+            calc_x = ((x % self.width) + self.width) % self.width;
+            calc_y = ((y % self.height) + self.height) % self.height;
+        } else {
+            // Clamp coordinates to map boundaries for bounded terrain
+            calc_x = x.clamp(0, self.width - 1);
+            calc_y = y.clamp(0, self.height - 1);
+        }
+
+        let index = calc_y * self.width + calc_x;
         self.vec_map[index as usize]
     }
 
@@ -110,11 +131,16 @@ impl PerlinMap {
     }
 
     pub fn is_valid_coord(&self, scale: f32, plain_h: i32, plain_w: i32, x: f32, y: f32) -> bool {
+        if self.seamless {
+            // In seamless mode, all coordinates are valid
+            return true;
+        }
+        
         let end_x = x + (plain_w as f32 * scale);
         let end_y = y + (plain_h as f32 * scale);
         
-        if end_x > self.width as f32 ||
-            end_y > self.height as f32 ||
+        if end_x >= self.width as f32 ||
+            end_y >= self.height as f32 ||
             x < 0.0 ||
             y < 0.0 {
             return false;

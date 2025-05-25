@@ -21,8 +21,8 @@ fn main() {
     
     //Initialize player
     let mut player = Player::new();
-    player.x = 18.0;
-    player.y = 16.0;
+    player.x = 0.0;
+    player.y = 0.0;
     player.speed = 0.01;
     let rotate_value = PI/500.0;
 

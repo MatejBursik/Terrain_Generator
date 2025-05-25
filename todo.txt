@@ -8,8 +8,3 @@ Rework:
     - README.md
 
 Fix:
-    - out of bounds: max Y border check is failing but not the max X (issue probably in generate_mesh())
-        thread 'main' panicked at src\perlin_noise.rs:40:21:
-        index out of bounds: the len is 100 but the index is 100
-        note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-        error: process didn't exit successfully: `target\debug\application.exe` (exit code: 101)
