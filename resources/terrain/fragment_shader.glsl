@@ -8,7 +8,7 @@ void main() {
     // Calculate distance to the nearest edge using barycentric coordinates
     float minBary = min(min(barycentricCoord.x, barycentricCoord.y), barycentricCoord.z);
     
-    float edgeThreshold = 0.02;
+    float edgeThreshold = 0.01;
     vec3 edgeColor = vec3(0.0, 0.0, 0.0);
     
     // Mix face color and edge color based on distance from the edge

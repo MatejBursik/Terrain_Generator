@@ -36,33 +36,71 @@ fn main() {
     let mut vertices: Vec<f32> = r.0;
     let mut indices: Vec<i32> = r.1;
 
+    // Load spaceship (3D object)
+    /*
+    let obj_loader = object_loader::ObjectLoader::new("resources/spaceship/placeholder_spaceship.gltf");
+    let spaceship_vertices = obj_loader.get_vertices();
+    let spaceship_indices = obj_loader.get_indices();
+    let spaceship_triangle_count = obj_loader.get_triangle_count();
+
+    println!("{:?}", spaceship_vertices);
+    */
+
     // Initialize application
     let mut window = window::Window::new(1200, 720, "Terrain Generator");
     window.init_gl();
     window.set_fps(1);
 
-    let vao = vao::ArrayObject::new();
-    vao.bind();
+    // Setup terrain rendering
+    let terrain_vao = vao::ArrayObject::new();
+    terrain_vao.bind();
 
-    let vbo = vbo::BufferObject::new(gl::ARRAY_BUFFER, gl::STATIC_DRAW);
-    vbo.bind();
-    vbo.store_f32_data(&vertices);
+    let terrain_vbo = vbo::BufferObject::new(gl::ARRAY_BUFFER, gl::STATIC_DRAW);
+    terrain_vbo.bind();
+    terrain_vbo.store_f32_data(&vertices);
 
-    let ibo = vbo::BufferObject::new(gl::ELEMENT_ARRAY_BUFFER, gl::STATIC_DRAW);
-    ibo.bind();
-    ibo.store_i32_data(&indices);
+    let terrain_ibo = vbo::BufferObject::new(gl::ELEMENT_ARRAY_BUFFER, gl::STATIC_DRAW);
+    terrain_ibo.bind();
+    terrain_ibo.store_i32_data(&indices);
 
-    let position_attribute = v_attribute::VertexAttribute::new(0, 3, gl::FLOAT, gl::FALSE, 3 * std::mem::size_of::<GLfloat>() as GLsizei, ptr::null());
-    position_attribute.enable();
+    let terrain_position_attribute = v_attribute::VertexAttribute::new(0, 3, gl::FLOAT, gl::FALSE, 3 * std::mem::size_of::<GLfloat>() as GLsizei, ptr::null());
+    terrain_position_attribute.enable();
 
-    // Load shaders
-    let mut shader = shader_reader::ShaderReader::new("resources/vertex_shader.glsl", "resources/fragment_shader.glsl");
-    shader.bind();
+    // Load shaders for terrain
+    let mut terrain_shader = shader_reader::ShaderReader::new("resources/terrain/vertex_shader.glsl", "resources/terrain/fragment_shader.glsl");
+    terrain_shader.bind();
+
+    // Setup spaceship rendering
+    /*
+    let spaceship_vao = vao::ArrayObject::new();
+    spaceship_vao.bind();
+
+    let spaceship_vbo = vbo::BufferObject::new(gl::ARRAY_BUFFER, gl::STATIC_DRAW);
+    spaceship_vbo.bind();
+    spaceship_vbo.store_f32_data(spaceship_vertices);
+
+    let spaceship_ibo = vbo::BufferObject::new(gl::ELEMENT_ARRAY_BUFFER, gl::STATIC_DRAW);
+    spaceship_ibo.bind();
+    spaceship_ibo.store_i32_data(&spaceship_indices);
+
+    let spaceship_position_attribute = v_attribute::VertexAttribute::new(0, 3, gl::FLOAT, gl::FALSE, 3 * std::mem::size_of::<GLfloat>() as GLsizei, ptr::null());
+    spaceship_position_attribute.enable();
+
+    // Load shaders for spaceship
+    let mut spaceship_shader = shader_reader::ShaderReader::new("resources/spaceship/vertex_shader.glsl", "resources/spaceship/fragment_shader.glsl");
+    spaceship_shader.bind();
+    */
 
     // Create a transformation matrix and apply it to the shader
-    let mut transform = Matrix4::from_translation(Vector3::new(0.0, 0.0, 0.0)) * Matrix4::from_angle_x(Rad(PI/3.0)) * Matrix4::from_scale(0.75);
-    shader.create_uniform("transform");
-    shader.set_matrix4fv_uniform("transform", &transform);
+    let mut terrain_transform = Matrix4::from_translation(Vector3::new(0.0, 0.0, 0.0)) * Matrix4::from_angle_x(Rad(PI/3.0)) * Matrix4::from_scale(0.75);
+    terrain_shader.create_uniform("transform");
+    terrain_shader.set_matrix4fv_uniform("transform", &terrain_transform);
+
+    /*
+    let mut spaceship_transform = Matrix4::from_translation(Vector3::new(0.0, 0.0, 0.0)) * Matrix4::from_scale(0.25);
+    spaceship_shader.create_uniform("transform");
+    spaceship_shader.set_matrix4fv_uniform("transform", &spaceship_transform);
+    */
 
     // Setup Z-buffer (depth) testing
     unsafe {
@@ -73,14 +111,16 @@ fn main() {
         player.has_moved = false;
 
         // QE for rotation
-        if window.is_key_pressed(Key::Q) {
-            transform = transform * Matrix4::from_angle_z(-Rad(rotate_value));
-            player.direction -= rotate_value;
+        if window.is_key_pressed(Key::E) {
+            terrain_transform = terrain_transform * Matrix4::from_angle_z(Rad(rotate_value));
+            //spaceship_transform = spaceship_transform * Matrix4::from_angle_z(Rad(rotate_value));
+            player.direction += rotate_value;
             println!("{}", player.direction);
         }
-        if window.is_key_pressed(Key::E) {
-            transform = transform * Matrix4::from_angle_z(Rad(rotate_value));
-            player.direction += rotate_value;
+        if window.is_key_pressed(Key::Q) {
+            terrain_transform = terrain_transform * Matrix4::from_angle_z(-Rad(rotate_value));
+            //spaceship_transform = spaceship_transform * Matrix4::from_angle_z(-Rad(rotate_value));
+            player.direction -= rotate_value;
             println!("{}", player.direction);
         }
 
@@ -129,21 +169,32 @@ fn main() {
             triangle_count = r.2;
             
             // Update VBO and IBO with new data
-            vbo.bind();
-            vbo.store_f32_data(&vertices);
+            terrain_vbo.bind();
+            terrain_vbo.store_f32_data(&vertices);
             
-            ibo.bind();
-            ibo.store_i32_data(&indices);
+            terrain_ibo.bind();
+            terrain_ibo.store_i32_data(&indices);
         }
 
         unsafe {
             gl::ClearColor(0.25, 0.25, 0.25, 1.0); // Gray background color
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
-            shader.bind();
-            shader.set_matrix4fv_uniform("transform", &transform);
+            // Render terrain
+            terrain_vao.bind();
+            terrain_shader.bind();
+            terrain_shader.set_matrix4fv_uniform("transform", &terrain_transform);
             gl::DrawElements(gl::TRIANGLES, triangle_count*3, gl::UNSIGNED_INT, ptr::null());
-            shader.unbind();
+            terrain_shader.unbind();
+
+            // Render spaceship
+            /*
+            spaceship_vao.bind();
+            spaceship_shader.bind();
+            spaceship_shader.set_matrix4fv_uniform("transform", &spaceship_transform);
+            gl::DrawElements(gl::TRIANGLES, spaceship_triangle_count, gl::UNSIGNED_INT, ptr::null());
+            spaceship_shader.unbind();
+            */
         }
         window.update();
     }
