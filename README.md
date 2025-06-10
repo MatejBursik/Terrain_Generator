@@ -12,7 +12,7 @@ There are 2 modes (Landscape view, First person view):
 | W, A, S, D | Forward, Left, Backward, Right (Movement keys) |
 | Q | Rotate clockwise |
 | E | Rotate anti-clockwise |
-| F1 | Switch between the 2 modes |
+| F1 | Switch between the 2 modes (not implemented yet) |
 
 ## Perlin noise generator
 Custom perlin noise generator based on the description from this video ( [How Does Perlin Noise Work? by Doggo's Science 2](https://www.youtube.com/watch?v=9B89kwHvTN4) ).
